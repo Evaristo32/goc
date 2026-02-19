@@ -10,8 +10,10 @@ public class Cliente implements Serializable {
     private static final long serialVersionUID = 1856425408984809859L;
 
     @Id // PESQUISA PARA QUE SERVE ESSA ANOTACAO NO JAVA?
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // PESQUISA PARA QUE SERVE ESSA ANOTACAO NO JAVA?
-    private Long id;
+    @SequenceGenerator(name = "seq_cliente", sequenceName = "seq_cliente", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_cliente") // PESQUISA PARA QUE SERVE ESSA ANOTACAO NO JAVA?
+    @Column(name = "clienteid")
+    private Long clienteId;
 
     @Column(nullable = false, length = 150) // PESQUISA PARA QUE SERVE ESSA ANOTACAO NO JAVA?
     private String nome;
@@ -34,12 +36,12 @@ public class Cliente implements Serializable {
     }
 
 
-    public Long getId() {
-        return id;
+    public Long getClienteId() {
+        return clienteId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setClienteId(Long clienteId) {
+        this.clienteId = clienteId;
     }
 
     public String getNome() {

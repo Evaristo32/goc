@@ -6,13 +6,15 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "itensOrcamento")
+@Table(name = "itensorcamento")
 public class ItensOrcamento implements Serializable {
     private static final long serialVersionUID = 1856425408984809859L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @SequenceGenerator(name = "seq_itens_orcamento", sequenceName = "seq_itens_orcamento", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_itens_orcamento")
+    @Column(name = "itemid")
+    private Long itemId;
 
     @Column(name = "quantidade", nullable = false)
     private Integer quantidade;
@@ -21,15 +23,19 @@ public class ItensOrcamento implements Serializable {
     private BigDecimal preco;
 
     @ManyToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "produtoid")
     private Produto produto;
 
-    public Long getId() {
-        return id;
+    @ManyToOne
+    @JoinColumn(name = "orcamentoid")
+    private Orcamento orcamento;
+
+    public Long getItemId() {
+        return itemId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setItemId(Long itemId) {
+        this.itemId = itemId;
     }
 
     public Produto getProduto() {
@@ -38,6 +44,14 @@ public class ItensOrcamento implements Serializable {
 
     public void setProduto(Produto produto) {
         this.produto = produto;
+    }
+
+    public Orcamento getOrcamento() {
+        return orcamento;
+    }
+
+    public void setOrcamento(Orcamento orcamento) {
+        this.orcamento = orcamento;
     }
 
     public ItensOrcamento() {

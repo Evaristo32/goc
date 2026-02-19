@@ -14,7 +14,8 @@ public class Orcamento implements Serializable {
     private static final long serialVersionUID = 1856425408984809859L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name = "seq_orcamento", sequenceName = "seq_orcamento", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_orcamento")
     private Long orcamentoID; //Primary Key
 
     @Column(name = "data", nullable = false)
@@ -30,11 +31,10 @@ public class Orcamento implements Serializable {
     private BigDecimal total;
 
     @ManyToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "clienteId")
     private Cliente cliente;
 
-    @OneToMany
-    @JoinColumn(name = "id")
+    @OneToMany(mappedBy = "orcamento")
     private List<ItensOrcamento> itensOrcamentos;
 
     public Cliente getCliente() {
@@ -107,4 +107,3 @@ public class Orcamento implements Serializable {
     }
 
 }
-

@@ -1,0 +1,51 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: goc-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-goc}
+      POSTGRES_USER: ${POSTGRES_USER:-goc}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-goc_pass}
+    ports:
+      - "5437:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-goc}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - goc-network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: goc-app
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${POSTGRES_DB:-goc}
+      DB_USER: ${POSTGRES_USER:-goc}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-goc_pass}
+      JAVA_OPTS: "-Xms256m -Xmx512m"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: on-failure:3
+    networks:
+      - goc-network
+
+volumes:
+  db-data:
+    driver: local
+
+networks:
+  goc-network:
+    driver: bridge
+

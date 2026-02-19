@@ -12,8 +12,10 @@ public class Produto implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @SequenceGenerator(name = "seq_produto", sequenceName = "seq_produto", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_produto")
+    @Column(name = "produtoid")
+    private Long produtoId;
 
 
     @Column(name = "nome", nullable = false, length = 150)
@@ -34,12 +36,13 @@ public class Produto implements Serializable {
         this.preco = preco;
 
     }
-    public Long getId() {
-        return id;
+
+    public Long getProdutoId() {
+        return produtoId;
     }
 
-    protected void setId(Long id){
-        this.id =id;
+    public void setProdutoId(Long produtoId) {
+        this.produtoId = produtoId;
     }
 
     public String getNome() {
