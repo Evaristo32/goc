@@ -31,7 +31,7 @@ public class Orcamento implements Serializable {
     private BigDecimal total;
 
     @ManyToOne
-    @JoinColumn(name = "clienteId")
+    @JoinColumn(name = "clienteid")
     private Cliente cliente;
 
     @OneToMany(mappedBy = "orcamento")

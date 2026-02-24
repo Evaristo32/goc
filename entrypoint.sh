@@ -5,7 +5,7 @@ DB_HOST=${DB_HOST:-db}
 DB_PORT=${DB_PORT:-5432}
 DB_NAME=${DB_NAME:-goc}
 DB_USER=${DB_USER:-goc}
-DB_PASSWORD=${DB_PASSWORD:-goc_pass}
+DB_PASSWORD=${DB_PASSWORD:-goc}
 JAVA_OPTS=${JAVA_OPTS:-"-Xms256m -Xmx512m"}
 
 echo "=========================================="

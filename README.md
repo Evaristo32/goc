@@ -1,245 +1,350 @@
-# GOC — Gestão de Orçamentos da Construção
+# GOC - Gestão de Orçamentos da Construção
 
-![Status](https://img.shields.io/badge/status-active-green)
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
-![Java](https://img.shields.io/badge/java-17-orange)
-![Spring Boot](https://img.shields.io/badge/springboot-4.0.1-green)
-![PostgreSQL](https://img.shields.io/badge/postgresql-15-336791)
-![Docker](https://img.shields.io/badge/docker-yes-2496ED)
+## 📋 Visão Geral
 
-## 📖 Documentação
-
-Acesse a documentação completa em:
-
-- **[ARCHITECTURE.md](ARCHITECTURE.md)** — Arquitetura do projeto, stack tecnológico, modelo de dados
-- **[SETUP.md](SETUP.md)** — Guia passo a passo para compilar, rodar e fazer deploy
-- **[README.md](README.md)** — Este arquivo (visão geral rápida)
+Sistema REST API para gestão de orçamentos da construção, desenvolvido com Spring Boot 3.4.0, PostgreSQL 15 e Docker.
 
 ---
 
-## 🚀 Quick Start
+## 🛠️ Tecnologias
 
-### Pré-requisitos
-- Docker (v20.10+)
-- Docker Compose (v2.0+)
+- **Java 17**
+- **Spring Boot 3.4.0**
+- **PostgreSQL 15**
+- **Docker & Docker Compose**
+- **Maven**
+- **JPA/Hibernate**
+- **Flyway (Migrations)**
 
-### Iniciar em 1 Comando
+---
 
+## 🚀 Primeira Execução
+
+### Opção 1: Com Docker (Recomendado para Produção)
+
+#### 1.1 Pré-requisitos
+- Docker Desktop instalado e rodando
+- Terminal/Git Bash
+
+#### 1.2 Passos
+
+**Passo 1:** Clonar/abrir o projeto
 ```bash
-cd /Users/evaristodev/desenvolvimento/projetos/pessoal/goc
-chmod +x setup.sh
-./setup.sh
+cd goc
 ```
 
-A aplicação estará disponível em **2-3 minutos** em: `http://localhost:8080`
-
----
-
-## 📊 Projeto em Números
-
-| Métrica | Valor |
-|---------|-------|
-| **Tabelas** | 4 (Cliente, Produto, Orçamentos, ItensOrcamento) |
-| **Sequences** | 4 (uma por tabela) |
-| **Índices** | 5 (para otimização) |
-| **Endpoints** | 2 (Health, Info) |
-| **Linguagem** | Java 17 |
-| **Framework** | Spring Boot 4.0.1 |
-| **Banco de Dados** | PostgreSQL 15 |
-| **Containerização** | Docker + Docker Compose |
-
----
-
-## 🛠️ Stack Tecnológico
-
+**Passo 2:** Compilar o projeto
+```bash
+./mvnw clean package -DskipTests
 ```
-┌─────────────────────────────────┐
-│    Spring Boot 4.0.1 (Web API)  │
-├─────────────────────────────────┤
-│  Spring Data JPA + Hibernate    │
-├─────────────────────────────────┤
-│    PostgreSQL 15 (Banco)        │
-├─────────────────────────────────┤
-│  Docker + Docker Compose        │
-└─────────────────────────────────┘
+*Aguarde 2-3 minutos para download de dependências e compilação*
+
+**Passo 3:** Iniciar Docker Compose
+```bash
+docker compose up -d
+```
+*Isso inicia PostgreSQL na porta 5437 e a aplicação na porta 8080*
+
+**Passo 4:** Aguardar inicialização
+```bash
+sleep 30
+```
+*Aguarde a aplicação iniciar completamente*
+
+**Passo 5:** Verificar status
+```bash
+docker ps
+docker logs goc-app --tail 20
 ```
 
+**Passo 6:** Testar a API
+```bash
+# Health Check
+curl http://localhost:8080/actuator/health
+
+# Criar Cliente
+curl -X POST http://localhost:8080/api/clientes \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nome": "João Silva",
+    "email": "joao@example.com",
+    "endereco": "Rua Principal, 123"
+  }'
+```
+
+**Passo 7:** Parar a aplicação
+```bash
+docker compose down
+```
+
 ---
 
-## 📋 Funcionalidades
+### Opção 2: Direto pela IDE (IntelliJ - Recomendado para Desenvolvimento)
 
-✅ **Implementadas:**
-- Estrutura Spring Boot com REST API
-- Modelo de dados completo (4 entidades)
-- PostgreSQL com migrations automáticas
-- Docker multi-stage build
-- Health checks
-- Actuator para monitoramento
+#### 2.1 Pré-requisitos
+- IntelliJ IDEA Community ou Ultimate
+- Java 17+ instalado
+- PostgreSQL rodando (via Docker ou instalado)
 
-🔄 **A Implementar:**
-- REST endpoints para CRUD
-- Autenticação e autorização
-- Validação de entrada
-- Testes unitários
+#### 2.2 Passos
+
+**Passo 1:** Abrir o projeto
+- `File` → `Open` → Selecione a pasta do projeto `goc`
+- IntelliJ detectará automaticamente que é um projeto Maven
+- Clique em `Trust Project` quando solicitado
+
+**Passo 2:** Configurar o Java SDK
+- `IntelliJ IDEA` → `Preferences` (macOS) ou `Settings` (Windows/Linux)
+- `Project Structure` → `Project`
+- Em `SDK`, selecione `Java 17+`
+- Se não tiver, clique `Add SDK` → `Download JDK` → Escolha `Temurin 17.x`
+- Clique `Apply` e `OK`
+
+**Passo 3:** Carregar dependências Maven
+- Clique com botão direito na raiz do projeto (pasta `goc`)
+- `Maven` → `Reload Projects`
+- Aguarde o download de todas as dependências (2-3 minutos)
+
+**Passo 4:** Iniciar o PostgreSQL (se não estiver rodando)
+```bash
+# Abra um novo terminal e execute:
+docker compose up -d db
+```
+*Isso inicia apenas o banco de dados na porta 5437*
+
+**Passo 5:** Configurar Spring Boot Run Configuration
+- No IntelliJ: `Run` → `Edit Configurations...`
+- Clique `+` (adicionar nova configuração)
+- Selecione `Spring Boot`
+- Preencha:
+  - **Name:** `GocApplication`
+  - **Main class:** `br.com.goc.GocApplication`
+  - **VM options:** (deixe em branco)
+  - **Active profiles:** `dev` (opcional)
+- Clique `Apply` e `OK`
+
+**Passo 6:** Executar a aplicação
+- Clique no botão ▶️ (Run) no topo direito do IntelliJ
+- Ou pressione `Ctrl + R` (macOS: `Cmd + R`)
+- Aguarde aparecer: `Tomcat started on port 8080`
+
+**Passo 7:** Testar a API
+```bash
+# Health Check
+curl http://localhost:8080/actuator/health
+
+# Criar Cliente
+curl -X POST http://localhost:8080/api/clientes \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nome": "João Silva",
+    "email": "joao@example.com",
+    "endereco": "Rua Principal, 123"
+  }'
+```
+
+**Passo 8:** Parar a aplicação
+- Clique no botão ⏹️ (Stop) no IntelliJ
+- Ou pressione `Ctrl + C` no terminal
 
 ---
 
-## 📂 Estrutura de Arquivos
+### Opção 3: Pela Linha de Comando (Maven)
+
+#### 3.1 Pré-requisitos
+- Java 17+ instalado
+- PostgreSQL rodando na porta 5437
+
+#### 3.2 Passos
+
+**Passo 1:** Navegue até o projeto
+```bash
+cd goc
+```
+
+**Passo 2:** Inicie o PostgreSQL (se necessário)
+```bash
+docker run -d \
+  --name goc-postgres \
+  -e POSTGRES_DB=goc \
+  -e POSTGRES_USER=goc \
+  -e POSTGRES_PASSWORD=goc_pass \
+  -p 5437:5432 \
+  postgres:15-alpine
+```
+
+**Passo 3:** Execute a aplicação
+```bash
+./mvnw spring-boot:run
+```
+
+**Passo 4:** Aguarde a mensagem
+```
+Tomcat started on port(s): 8080 (http)
+```
+
+**Passo 5:** Testar
+```bash
+curl http://localhost:8080/actuator/health
+```
+
+**Passo 6:** Parar
+- Pressione `Ctrl + C` no terminal
+
+---
+
+## 📊 Comparação de Opções
+
+| Aspecto | Docker | IDE (IntelliJ) | CLI |
+|---------|--------|---|---|
+| **Setup Inicial** | Moderado | Fácil | Fácil |
+| **Desenvolvimento** | Difícil debugar | ⭐ Melhor | Médio |
+| **Performance** | Isolado | Nativa | Nativa |
+| **Banco Sincronizado** | ✅ Sim | ⚠️ Manual | ⚠️ Manual |
+| **Ideal para** | Produção | Desenvolvimento | Testes rápidos |
+
+---
+
+## 🔧 Troubleshooting
+
+### Erro: "Connection refused" ao tentar conectar no banco
+**Solução:** PostgreSQL não está rodando
+```bash
+# Verifique:
+docker ps | grep postgres
+
+# Se não está rodando, inicie:
+docker compose up -d db
+```
+
+### Erro: "Port 8080 already in use"
+**Solução:** Outra aplicação está usando a porta
+```bash
+# Libere a porta:
+lsof -i :8080
+kill -9 <PID>
+
+# Ou use outra porta no application.yaml:
+# server:
+#   port: 8081
+```
+
+### Erro: "Module not specified" no IntelliJ
+**Solução:** Recarregue o Maven
+- Clique direito na raiz do projeto
+- `Maven` → `Reload Projects`
+
+### Erro: "JDK not configured"
+**Solução:** Configure o SDK
+- `IntelliJ IDEA` → `Preferences` → `Project Structure` → `Project`
+- Selecione ou baixe Java 17+
+
+---
+
+## 💡 Dicas Importantes
+
+1. **Primeira vez?** Recomendamos a Opção 2 (IDE) para entender melhor o código
+2. **Quer ver logs?** Use `docker logs goc-app -f` para acompanhar em tempo real
+3. **Debugar?** No IntelliJ, clique à esquerda de uma linha e use `Debug` (Shift+Ctrl+D)
+4. **Banco vazio?** Execute `docker compose down -v` e depois `up -d` para resetar
+
+---
+
+## 📊 Endpoints
+
+### POST /api/clientes
+Cria um novo cliente no sistema.
+
+**Request:**
+```json
+{
+  "nome": "string (obrigatório, max 150)",
+  "email": "string (obrigatório, único)",
+  "endereco": "string (opcional)"
+}
+```
+
+**Response:** HTTP 201 com dados do cliente criado
+
+---
+
+## 🔌 Conexão PostgreSQL
+
+| Parâmetro | Valor |
+|-----------|-------|
+| Host | `localhost` |
+| Porta | `5437` |
+| Banco | `goc` |
+| Usuário | `goc` |
+| Senha | `goc_pass` |
+
+---
+
+## 📁 Estrutura do Projeto
 
 ```
 goc/
 ├── src/
-│   ├── main/java/br/com/goc/
-│   │   ├── GocApplication.java
-│   │   ├── config/           (Configurações)
-│   │   ├── model/            (Entidades JPA)
-│   │   ├── repository/       (Acesso a dados)
-│   │   ├── service/          (Lógica de negócio)
-│   │   └── rest/             (Controllers)
-│   └── resources/
-│       ├── application.yaml
-│       └── db/migration/
-├── Dockerfile
+│   ├── main/
+│   │   ├── java/br/com/goc/
+│   │   │   ├── GocApplication.java
+│   │   │   ├── model/
+│   │   │   │   ├── Cliente.java
+│   │   │   │   ├── Produto.java
+│   │   │   │   ├── Orcamento.java
+│   │   │   │   └── ItensOrcamento.java
+│   │   │   ├── repository/
+│   │   │   │   └── ClienteRepository.java
+│   │   │   ├── service/
+│   │   │   │   └── ClienteService.java
+│   │   │   └── rest/
+│   │   │       └── ClienteController.java
+│   │   └── resources/
+│   │       ├── application.yaml
+│   │       └── db/migration/
+│   │           └── V1__create_cliente_table.sql
+│   └── test/
+│       └── java/br/com/goc/
+│           ├── rest/
+│           │   └── ClienteControllerTest.java
+│           └── service/
+│               └── ClienteServiceTest.java
 ├── docker-compose.yml
+├── Dockerfile
+├── init.sql
 ├── pom.xml
-├── ARCHITECTURE.md           ← Leia isto
-├── SETUP.md                  ← Guia completo
-├── README.md                 ← Este arquivo
-└── setup.sh                  (Script automático)
+└── README.md
 ```
 
 ---
 
-## 🌐 Endpoints Disponíveis
+## 🗄️ Banco de Dados
 
-| Endpoint | Método | Descrição |
-|----------|--------|-----------|
-| `/actuator/health` | GET | Status da aplicação |
-| `/actuator/info` | GET | Informações da app |
-| `/` | GET | Root path |
-
----
-
-## 📈 Modelo de Dados
-
-```
-┌──────────┐
-│ Cliente  │──1:N─→ ┌───────────┐
-└──────────┘        │ Orçamento │
-                    └───────────┘
-                          │
-                         1:N
-                          │
-                          ↓
-                   ┌──────────────┐
-                   │ Item Orc.    │──N:1─→ ┌─────────┐
-                   └──────────────┘        │ Produto │
-                                          └─────────┘
-```
+Tabelas criadas automaticamente:
+- `cliente` - Clientes do sistema
+- `produto` - Produtos para orçamentos
+- `orcamentos` - Orçamentos emitidos
+- `itensorcamento` - Itens de cada orçamento
 
 ---
 
-## 🐳 Containers
-
-| Container | Imagem | Porta | Status |
-|-----------|--------|-------|--------|
-| goc-app | goc:latest | 8080 | Web API |
-| goc-postgres | postgres:15-alpine | 5437 | Banco de Dados |
-
----
-
-## ✅ Verificações de Status
-
-### Health Check
-```bash
-curl http://localhost:8080/actuator/health
-# {"status":"UP", ...}
-```
-
-### Verificar Tabelas
-```bash
-docker exec goc-postgres psql -U goc -d goc -c "\dt"
-#          Name         | Type  | Owner
-# ───────────────────────────────────────
-#  cliente              | table | goc
-#  itensorcamento       | table | goc
-#  orcamentos           | table | goc
-#  produto              | table | goc
-```
-
-### Logs da Aplicação
-```bash
-docker compose logs -f goc-app
-```
-
----
-
-## 🔄 Comandos Essenciais
+## 🛑 Parar a Aplicação
 
 ```bash
-# Iniciar tudo
-./setup.sh
+docker compose down
+```
 
-# Parar containers
-docker compose stop
-
-# Remover (com dados)
+Para remover também os dados:
+```bash
 docker compose down -v
-
-# Ver status
-docker compose ps
-
-# Ver logs
-docker compose logs -f
-
-# Acessar banco
-docker exec -it goc-postgres psql -U goc -d goc
-
-# Acessar aplicação
-docker exec -it goc-app bash
 ```
 
 ---
 
-## 🚀 Próximos Passos
+## 📝 Notas
 
-1. **Implementar REST Controllers** para CRUD de entidades
-2. **Adicionar autenticação** (JWT/OAuth2)
-3. **Implementar validações** de entrada
-4. **Escrever testes unitários** e de integração
-5. **Configurar logging centrali ado** (ELK Stack)
-6. **Implementar caching** (Redis)
-7. **Deploy em Kubernetes**
+- A aplicação usa Flyway para gerenciar migrations do banco de dados
+- O schema é sincronizado automaticamente via Hibernate (ddl-auto: update)
+- Os testes podem ser executados com: `./mvnw test`
 
----
-
-## 📚 Documentação Completa
-
-Para detalhes completos sobre:
-
-- **Arquitetura e tecnologias** → Veja [ARCHITECTURE.md](ARCHITECTURE.md)
-- **Setup, compilação e deploy** → Veja [SETUP.md](SETUP.md)
-- **Troubleshooting** → Veja [SETUP.md#troubleshooting](SETUP.md#-troubleshooting)
-
----
-
-## 📞 Suporte
-
-Se encontrar problemas:
-
-1. Consulte [SETUP.md#troubleshooting](SETUP.md#-troubleshooting)
-2. Verifique os logs: `docker compose logs`
-3. Refaça tudo do zero: `docker compose down -v && ./setup.sh`
-
----
-
-## 📄 Licença
-
-Este projeto é de uso interno.
-
----
-
-**Última atualização:** Fevereiro 2026  
-**Versão:** 1.0.0  
-**Status:** ✅ Production Ready
 

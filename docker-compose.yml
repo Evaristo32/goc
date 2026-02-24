@@ -5,15 +5,15 @@ services:
     container_name: goc-postgres
     restart: always
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-goc}
-      POSTGRES_USER: ${POSTGRES_USER:-goc}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-goc_pass}
+      POSTGRES_DB: goc
+      POSTGRES_USER: goc
+      POSTGRES_PASSWORD: goc_pass
     ports:
       - "5437:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-goc}"]
+      test: ["CMD-SHELL", "pg_isready -U goc"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -30,9 +30,9 @@ services:
     environment:
       DB_HOST: db
       DB_PORT: 5432
-      DB_NAME: ${POSTGRES_DB:-goc}
-      DB_USER: ${POSTGRES_USER:-goc}
-      DB_PASSWORD: ${POSTGRES_PASSWORD:-goc_pass}
+      DB_NAME: goc
+      DB_USER: goc
+      DB_PASSWORD: goc_pass
       JAVA_OPTS: "-Xms256m -Xmx512m"
     depends_on:
       db:
